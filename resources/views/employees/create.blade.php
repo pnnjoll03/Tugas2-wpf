@@ -111,6 +111,17 @@
                     </div>
                 </div>
 
+                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center">
+                        <span class="text-blue-700 font-medium">Informasi Login:</span>
+                    </div>
+                    <p class="text-blue-600 text-sm mt-1">
+                        Setelah data disimpan, karyawan dapat login dengan:<br>
+                        <strong>Email:</strong> Email yang diisi di atas<br>
+                        <strong>Password:</strong> <code class="bg-blue-100 px-2 py-1 rounded">password123</code>
+                    </p>
+                </div>
+
                 <!-- Tombol Submit -->
                 <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                     <a href="{{ route('employees.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-lg transition duration-200">

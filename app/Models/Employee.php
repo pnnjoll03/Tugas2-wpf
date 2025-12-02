@@ -18,6 +18,10 @@ class Employee extends Model
         'jabatan_id',
     ];
 
+    public function user(){
+        return $this->hasOne(User::class);
+    }
+
     public function department(){
         return $this->belongsTo(Department::class, 'departemen_id');
     }

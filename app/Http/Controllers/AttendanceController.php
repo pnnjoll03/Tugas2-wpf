@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class AttendanceController extends Controller
 {
@@ -16,25 +17,60 @@ class AttendanceController extends Controller
 
     public function create($employee_id = null)
     {
-        $employees = Employee::all();
-        $selectedEmployee = $employee_id ? Employee::find($employee_id) : null;
-        
-        return view('attendances.create', compact('employees', 'selectedEmployee'));
+        if(Session::get('user_role') !== 'employee'){
+            abort(403, 'Unauthorized action.');
+        }
+
+        $employeeId = Session::get('employee_id');
+        $employee = Employee::find($employeeId);
+
+        if(!$employee){
+            return redirect()->route('employees.index')->with('error', 'Data karyawan tidak ditemukan.');
+        }
+
+        $today = now()->format('Y-m-d');
+        $todayAttendance = Attendance::where('karyawan_id', $employeeId)->where('tanggal', $today)->first();
+
+        return view('attendances.create', compact('employee', 'todayAttendance'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'karyawan_id' => 'required|exists:employees,id',
-            'tanggal' => 'required|date',
-            'waktu_masuk' => 'nullable|date_format:H:i',
-            'waktu_keluar' => 'nullable|date_format:H:i',
-            'status_absensi' => 'required|in:hadir,izin,sakit,alpha'
-        ]);
-
-        Attendance::create($request->all());
+        if(Session::get('user_role') !== 'employee'){
+            abort(403, 'Unauthorized action.');
+        }
         
-        return redirect()->route('attendances.index')->with('success', 'Data absensi berhasil disimpan');
+        $employeeId = Session::get('employee_id');
+        $employee = Employee::find($employeeId);
+
+        if(!$employee){
+            return redirect()->back()->with('error', 'Data karyawan tidak ditemukan.');
+        }
+
+        $today = now()->format('Y-m-d');
+        $currentTime = now()->format('H:i');
+
+        $attendance = Attendance::where('karyawan_id', $employeeId)->where('tanggal', $today)->first();
+
+        if(!$attendance){
+            Attendance::create([
+                'karyawan_id' => $employeeId,
+                'tanggal' => $today,
+                'waktu_masuk' => $currentTime,
+                'waktu_keluar' => null,
+                'status_absensi' => 'hadir',
+            ]);
+
+            return redirect()->route('attendances.create')->with('success', 'Absen masuk berhasil! Jam:' . $currentTime);
+        }elseif($attendance->waktu_masuk && !$attendance->waktu_keluar){
+            $attendance->update([
+                'waktu_keluar' => $currentTime
+            ]);
+
+            return redirect()->route('attendances.create')->with('success', 'Absen berhasil masuk! Jam: ' . $currentTime);
+        }else{
+            return redirect()->route('attendance.create')->with('error', 'Absen anda sudah lengkap hari ini.');
+        }
     }
 
     public function show(string $id)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Salary;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class SalaryController extends Controller
 {
@@ -47,6 +48,10 @@ class SalaryController extends Controller
 
     public function edit($id)
     {
+        if(Session::get('user_role') !== 'admin'){
+            abort(403, 'Unauthorized action');
+        }
+        
         $salary = Salary::with(['employee.position', 'employee.department'])->findOrFail($id);
         $employees = Employee::with(['position', 'department'])->get();
 
@@ -77,11 +82,15 @@ class SalaryController extends Controller
             'total_gaji' => $total,
         ]);
 
-        return redirect()->route('salaries.index')->with('success', 'Data gaji berhasil diupdate!');
+        return redirect()->route('employees.index')->with('success', 'Data gaji berhasil diupdate!');
     }
 
     public function destroy($id)
     {
+        if(Session::get('user_role') !== 'admin'){
+            abort(403, 'Unauthorized action.');
+        }
+
         $salary = Salary::findOrFail($id);
         $salary->delete();
 

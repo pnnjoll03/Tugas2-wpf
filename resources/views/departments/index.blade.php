@@ -5,10 +5,12 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Daftar Departemen</h1>
+            @if(session('user_role') === 'admin')
             <div class="flex justify-between items-center gap-3">
                 <a href="{{ route('departments.create') }}" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Tambah Department</a>
                 <a href="{{ route('positions.create') }}" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Tambah Jabatan dan Gaji</a>
             </div>
+            @endif
         </div>
 
         @foreach($departments as $department)

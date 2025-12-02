@@ -38,7 +38,7 @@
                     <!-- Bulan -->
                     <div>
                         <label for="bulan" class="block font-medium text-gray-700 mb-2">Bulan</label>
-                        <input type="text" name="bulan" id="bulan" placeholder="Contoh: Oktober 2025" required
+                        <input type="text" name="bulan" id="bulan" placeholder="Contoh: 2025-12" required
                                class="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                value="{{ old('bulan') }}">
                     </div>
